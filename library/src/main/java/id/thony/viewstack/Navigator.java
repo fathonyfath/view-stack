@@ -68,6 +68,13 @@ public class Navigator {
         return false;
     }
 
+    public void replace(@NonNull Backstack backstack) {
+        final Backstack oldBackstack = this.backstack.clone();
+        this.backstack = backstack;
+        this.handler.handleBackstackChange(
+                this, oldBackstack, this.backstack, NavigationDirection.Replace);
+    }
+
     @NonNull
     protected ViewState obtainViewState(@NonNull ViewKey viewKey) {
         return this.backstack.obtainViewState(viewKey);
