@@ -39,7 +39,6 @@ public class Navigator {
         outBundle.putParcelable(BackstackKey, this.backstack);
     }
 
-    @NonNull
     public boolean onBackPressed() {
         return this.pop();
     }
@@ -57,7 +56,6 @@ public class Navigator {
                 this, oldBackstack, this.backstack, NavigationDirection.Forward);
     }
 
-    @NonNull
     public boolean pop() {
         final Backstack oldBackstack = this.backstack.clone();
         final boolean isPopped = this.backstack.popKey();
