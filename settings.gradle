@@ -1,0 +1,3 @@
+rootProject.name = "View Stack"
+include ':app'
+include ':library'

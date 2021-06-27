@@ -1,0 +1,149 @@
+package id.thony.viewstack;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.Pair;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import java.util.Arrays;
+import java.util.EmptyStackException;
+import java.util.LinkedHashMap;
+import java.util.Stack;
+
+public final class Backstack implements Parcelable {
+
+    public static final Creator<Backstack> CREATOR = new Creator<Backstack>() {
+        @NonNull
+        @Override
+        public Backstack createFromParcel(@NonNull Parcel in) {
+            return new Backstack(in);
+        }
+
+        @NonNull
+        @Override
+        public Backstack[] newArray(int size) {
+            return new Backstack[size];
+        }
+    };
+
+    @NonNull
+    public static Backstack of(@NonNull ViewKey... keys) {
+        final Stack<Pair<ViewKey, ViewState>> viewStack = new Stack<>();
+        for (ViewKey key : keys) {
+            viewStack.push(Pair.create(key, new ViewState()));
+        }
+        return new Backstack(viewStack);
+    }
+
+    @NonNull
+    private final Stack<Pair<ViewKey, ViewState>> history;
+
+    private Backstack(@NonNull Stack<Pair<ViewKey, ViewState>> history) {
+        if (history.size() <= 0) {
+            throw new IllegalStateException();
+        }
+
+        this.history = history;
+    }
+
+    protected void pushKey(@NonNull ViewKey viewKey) {
+        this.history.push(Pair.create(viewKey, new ViewState()));
+    }
+
+    protected boolean popKey() {
+        if (this.history.size() == 1) {
+            return false;
+        }
+
+        try {
+            this.history.pop();
+            return true;
+        } catch (EmptyStackException ignored) {
+            return false;
+        }
+    }
+
+    @NonNull
+    protected ViewKey peekKey() {
+        return this.history.peek().first;
+    }
+
+    protected void clearHistory() {
+        this.history.clear();
+    }
+
+    @NonNull
+    protected ViewState obtainViewState(@NonNull ViewKey viewKey) {
+        ViewState foundViewState = null;
+        for (Pair<ViewKey, ViewState> pair : this.history) {
+            if (pair.first == viewKey) {
+                foundViewState = pair.second;
+                break;
+            }
+        }
+
+        if (foundViewState != null) {
+            return foundViewState;
+        } else {
+            throw new IllegalStateException("Cannot find ViewState for specified ViewKey. " +
+                    "Are you sure you get the ViewState from the Backstack object?");
+        }
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    @NonNull
+    @Override
+    protected Backstack clone() {
+        //noinspection unchecked
+        final Stack<Pair<ViewKey, ViewState>> viewKeyStack =
+                (Stack<Pair<ViewKey, ViewState>>) this.history.clone();
+        return new Backstack(viewKeyStack);
+    }
+
+    /*
+     * Parcelable implementation.
+     */
+    protected Backstack(@NonNull Parcel in) {
+        int size = in.readInt();
+        Parcelable[] viewKeys = in.readParcelableArray(getClass().getClassLoader());
+        Parcelable[] viewStates = in.readParcelableArray(getClass().getClassLoader());
+
+        this.history = new Stack<>();
+
+        for (int i = 0; i < size; i++) {
+            final ViewKey viewKey = (ViewKey) viewKeys[i];
+            final ViewState viewState = (ViewState) viewStates[i];
+            this.history.add(i, Pair.create(viewKey, viewState));
+        }
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        final int size = this.history.size();
+        dest.writeInt(this.history.size());
+
+        Parcelable[] viewKeys = new Parcelable[size];
+        Parcelable[] viewStates = new Parcelable[size];
+        for (int i = 0; i < size; i++) {
+            Pair<ViewKey, ViewState> pairKeyValue = this.history.get(i);
+            viewKeys[i] = pairKeyValue.first;
+            viewStates[i] = pairKeyValue.second;
+        }
+        dest.writeParcelableArray(viewKeys, flags);
+        dest.writeParcelableArray(viewStates, flags);
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        final String prepend = super.toString();
+        return "ViewBackstack(" + prepend + "){stack=" + history + "}";
+    }
+}
