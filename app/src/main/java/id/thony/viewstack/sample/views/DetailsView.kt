@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Parcelable
 import android.util.Log
 import android.widget.FrameLayout
+import id.thony.viewstack.Backstack
 import id.thony.viewstack.sample.R
 import id.thony.viewstack.sample.databinding.ViewDetailsBinding
 import id.thony.viewstack.sample.getKey
@@ -21,6 +22,12 @@ class DetailsView(context: Context) : FrameLayout(context) {
         binding.goToNext.setOnClickListener {
             val currentId = key.detailId
             navigator.push(Keys.DetailsKey(currentId + 1))
+        }
+        binding.replaceWithContent.setOnClickListener {
+            val currentId = key.detailId
+            val randomType =
+                listOf(Keys.ContentKey.NormalType, Keys.ContentKey.ExtendedType).random()
+            navigator.replace(Backstack.of(Keys.ContentKey(currentId, randomType)))
         }
     }
 
