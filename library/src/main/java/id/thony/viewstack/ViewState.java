@@ -4,39 +4,41 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.SparseArray;
 
-import androidx.annotation.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 public final class ViewState implements Parcelable {
     public static final Creator<ViewState> CREATOR = new Creator<ViewState>() {
+        @NotNull
         @Override
-        public ViewState createFromParcel(Parcel in) {
+        public ViewState createFromParcel(@NotNull Parcel in) {
             return new ViewState(in);
         }
 
+        @NotNull
         @Override
         public ViewState[] newArray(int size) {
             return new ViewState[size];
         }
     };
 
-    @NonNull
+    @NotNull
     private final SparseArray<Parcelable> hierarchyState;
 
     protected ViewState() {
         this.hierarchyState = new SparseArray<>();
     }
 
-    protected ViewState(Parcel in) {
+    protected ViewState(@NotNull Parcel in) {
         this.hierarchyState = in.readSparseArray(getClass().getClassLoader());
     }
 
-    @NonNull
+    @NotNull
     public SparseArray<Parcelable> getHierarchyState() {
         return hierarchyState;
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NotNull Parcel dest, int flags) {
         dest.writeSparseArray(this.hierarchyState);
     }
 

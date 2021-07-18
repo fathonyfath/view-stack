@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.view.LayoutInflater;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ViewKeyContextWrapper extends ContextWrapper {
     private static final String ViewKey = "ViewKey";
@@ -14,10 +14,10 @@ public class ViewKeyContextWrapper extends ContextWrapper {
     @Nullable
     private LayoutInflater layoutInflater;
 
-    @NonNull
+    @NotNull
     private final ViewKey viewKey;
 
-    public ViewKeyContextWrapper(@NonNull Context base, @NonNull ViewKey viewKey) {
+    public ViewKeyContextWrapper(@NotNull Context base, @NotNull ViewKey viewKey) {
         super(base);
         this.viewKey = viewKey;
     }
@@ -38,8 +38,8 @@ public class ViewKeyContextWrapper extends ContextWrapper {
 
     @SuppressLint("WrongConstant")
     @SuppressWarnings("unchecked")
-    @NonNull
-    public static <T extends ViewKey> T getViewKey(@NonNull Context context) {
+    @NotNull
+    public static <T extends ViewKey> T getViewKey(@NotNull Context context) {
         return (T) context.getSystemService(ViewKey);
     }
 }
