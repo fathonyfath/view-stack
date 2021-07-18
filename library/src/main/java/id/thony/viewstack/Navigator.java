@@ -2,20 +2,20 @@ package id.thony.viewstack;
 
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class Navigator {
-    @NonNull
+    @NotNull
     private static final String BackstackKey = "BackstackKey";
 
-    @NonNull
+    @NotNull
     private final BackstackHandler handler;
 
-    @NonNull
+    @NotNull
     private Backstack backstack;
 
-    public Navigator(@NonNull BackstackHandler handler, @NonNull Backstack backstack) {
+    public Navigator(@NotNull BackstackHandler handler, @NotNull Backstack backstack) {
         this.handler = handler;
         this.backstack = backstack;
     }
@@ -31,11 +31,11 @@ public class Navigator {
                 this, oldBackstack, this.backstack, NavigationDirection.Replace);
     }
 
-    public void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+    public void onRestoreInstanceState(@NotNull Bundle savedInstanceState) {
         this.backstack = savedInstanceState.getParcelable(BackstackKey);
     }
 
-    public void onSaveInstanceState(@NonNull Bundle outBundle) {
+    public void onSaveInstanceState(@NotNull Bundle outBundle) {
         outBundle.putParcelable(BackstackKey, this.backstack);
     }
 
@@ -46,7 +46,7 @@ public class Navigator {
     public void onDestroy() {
     }
 
-    public void push(@NonNull ViewKey... viewKeys) {
+    public void push(@NotNull ViewKey... viewKeys) {
         final Backstack oldBackstack = this.backstack.clone();
         for (ViewKey key : viewKeys) {
             this.backstack.pushKey(key);
@@ -68,15 +68,15 @@ public class Navigator {
         return false;
     }
 
-    public void replace(@NonNull Backstack backstack) {
+    public void replace(@NotNull Backstack backstack) {
         final Backstack oldBackstack = this.backstack.clone();
         this.backstack = backstack;
         this.handler.handleBackstackChange(
                 this, oldBackstack, this.backstack, NavigationDirection.Replace);
     }
 
-    @NonNull
-    protected ViewState obtainViewState(@NonNull ViewKey viewKey) {
+    @NotNull
+    protected ViewState obtainViewState(@NotNull ViewKey viewKey) {
         return this.backstack.obtainViewState(viewKey);
     }
 }

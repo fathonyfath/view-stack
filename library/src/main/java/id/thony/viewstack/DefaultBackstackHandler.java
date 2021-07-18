@@ -6,25 +6,25 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 public class DefaultBackstackHandler implements BackstackHandler {
 
-    @NonNull
+    @NotNull
     private final Context context;
-    @NonNull
+    @NotNull
     private final ViewGroup container;
 
-    public DefaultBackstackHandler(@NonNull Context context, @NonNull ViewGroup container) {
+    public DefaultBackstackHandler(@NotNull Context context, @NotNull ViewGroup container) {
         this.context = context;
         this.container = container;
     }
 
     @Override
-    public void handleBackstackChange(@NonNull Navigator navigator,
-                                      @NonNull Backstack oldStack,
-                                      @NonNull Backstack newStack,
-                                      @NonNull NavigationDirection direction) {
+    public void handleBackstackChange(@NotNull Navigator navigator,
+                                      @NotNull Backstack oldStack,
+                                      @NotNull Backstack newStack,
+                                      @NotNull NavigationDirection direction) {
         if (direction == NavigationDirection.Replace) {
             this.container.removeAllViews();
 

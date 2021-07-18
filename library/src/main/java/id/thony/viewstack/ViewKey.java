@@ -4,10 +4,10 @@ import android.content.Context;
 import android.os.Parcelable;
 import android.view.View;
 
-import androidx.annotation.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class ViewKey implements Parcelable {
 
-    @NonNull
-    public abstract View buildView(@NonNull Context context);
+    @NotNull
+    public abstract View buildView(@NotNull Context context);
 }
