@@ -1,11 +1,11 @@
 package id.thony.viewstack;
 
-import androidx.annotation.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 public interface BackstackHandler {
 
-    void handleBackstackChange(@NonNull Navigator navigator,
-                               @NonNull Backstack oldStack,
-                               @NonNull Backstack newStack,
-                               @NonNull NavigationDirection direction);
+    void handleBackstackChange(@NotNull Navigator navigator,
+                               @NotNull Backstack oldStack,
+                               @NotNull Backstack newStack,
+                               @NotNull NavigationDirection direction);
 }

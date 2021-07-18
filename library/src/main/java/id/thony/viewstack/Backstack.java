@@ -4,32 +4,29 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Pair;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.EmptyStackException;
-import java.util.LinkedHashMap;
 import java.util.Stack;
 
 public final class Backstack implements Parcelable {
 
     public static final Creator<Backstack> CREATOR = new Creator<Backstack>() {
-        @NonNull
+        @NotNull
         @Override
-        public Backstack createFromParcel(@NonNull Parcel in) {
+        public Backstack createFromParcel(@NotNull Parcel in) {
             return new Backstack(in);
         }
 
-        @NonNull
+        @NotNull
         @Override
         public Backstack[] newArray(int size) {
             return new Backstack[size];
         }
     };
 
-    @NonNull
-    public static Backstack of(@NonNull ViewKey... keys) {
+    @NotNull
+    public static Backstack of(@NotNull ViewKey... keys) {
         final Stack<Pair<ViewKey, ViewState>> viewStack = new Stack<>();
         for (ViewKey key : keys) {
             viewStack.push(Pair.create(key, new ViewState()));
@@ -37,10 +34,10 @@ public final class Backstack implements Parcelable {
         return new Backstack(viewStack);
     }
 
-    @NonNull
+    @NotNull
     private final Stack<Pair<ViewKey, ViewState>> history;
 
-    private Backstack(@NonNull Stack<Pair<ViewKey, ViewState>> history) {
+    private Backstack(@NotNull Stack<Pair<ViewKey, ViewState>> history) {
         if (history.size() <= 0) {
             throw new IllegalStateException();
         }
@@ -48,7 +45,7 @@ public final class Backstack implements Parcelable {
         this.history = history;
     }
 
-    protected void pushKey(@NonNull ViewKey viewKey) {
+    protected void pushKey(@NotNull ViewKey viewKey) {
         this.history.push(Pair.create(viewKey, new ViewState()));
     }
 
@@ -65,7 +62,7 @@ public final class Backstack implements Parcelable {
         }
     }
 
-    @NonNull
+    @NotNull
     protected ViewKey peekKey() {
         return this.history.peek().first;
     }
@@ -74,8 +71,8 @@ public final class Backstack implements Parcelable {
         this.history.clear();
     }
 
-    @NonNull
-    protected ViewState obtainViewState(@NonNull ViewKey viewKey) {
+    @NotNull
+    protected ViewState obtainViewState(@NotNull ViewKey viewKey) {
         ViewState foundViewState = null;
         for (Pair<ViewKey, ViewState> pair : this.history) {
             if (pair.first == viewKey) {
@@ -93,7 +90,7 @@ public final class Backstack implements Parcelable {
     }
 
     @SuppressWarnings("MethodDoesntCallSuperMethod")
-    @NonNull
+    @NotNull
     @Override
     protected Backstack clone() {
         //noinspection unchecked
@@ -105,7 +102,7 @@ public final class Backstack implements Parcelable {
     /*
      * Parcelable implementation.
      */
-    protected Backstack(@NonNull Parcel in) {
+    protected Backstack(@NotNull Parcel in) {
         int size = in.readInt();
         Parcelable[] viewKeys = in.readParcelableArray(getClass().getClassLoader());
         Parcelable[] viewStates = in.readParcelableArray(getClass().getClassLoader());
@@ -125,7 +122,7 @@ public final class Backstack implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(@NonNull Parcel dest, int flags) {
+    public void writeToParcel(@NotNull Parcel dest, int flags) {
         final int size = this.history.size();
         dest.writeInt(this.history.size());
 
@@ -140,7 +137,7 @@ public final class Backstack implements Parcelable {
         dest.writeParcelableArray(viewStates, flags);
     }
 
-    @NonNull
+    @NotNull
     @Override
     public String toString() {
         final String prepend = super.toString();
