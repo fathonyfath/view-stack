@@ -2,6 +2,14 @@ plugins {
     id 'com.android.library'
 }
 
+ext {
+    PUBLISH_GROUP_ID = 'id.thony.viewstack'
+    PUBLISH_ARTIFACT_ID = 'viewstack'
+    PUBLISH_VERSION = rootProject.version
+}
+
+apply from: "${rootDir}/scripts/publish-module.gradle"
+
 android {
     compileSdkVersion 30
     defaultConfig {
@@ -23,3 +31,4 @@ android {
 dependencies {
     compileOnly 'org.jetbrains:annotations:21.0.1'
 }
+
