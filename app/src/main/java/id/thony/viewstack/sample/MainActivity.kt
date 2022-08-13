@@ -1,13 +1,14 @@
 package id.thony.viewstack.sample
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.ViewGroup
-import id.thony.viewstack.Navigator
+import androidx.appcompat.app.AppCompatActivity
 import id.thony.viewstack.Backstack
 import id.thony.viewstack.DefaultBackstackHandler
-import id.thony.viewstack.sample.views.Keys
+import id.thony.viewstack.Navigator
+import id.thony.viewstack.sample.databinding.ActivityMainBinding
+import id.thony.viewstack.sample.homescreen.TitleKey
+import id.thony.viewstack.sample.listscreen.LeaderboardKey
 
 class MainActivity : AppCompatActivity() {
 
@@ -15,16 +16,30 @@ class MainActivity : AppCompatActivity() {
         const val NavigatorService = "NavigatorService";
     }
 
+    private lateinit var binding: ActivityMainBinding
     private lateinit var navigator: Navigator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        val content = findViewById<ViewGroup>(R.id.content)
+        binding.bottomNav.setOnNavigationItemReselectedListener {
+
+        }
+
+        binding.bottomNav.setOnNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.home -> navigator.replace(Backstack.of(TitleKey()))
+                R.id.list -> navigator.replace(Backstack.of(LeaderboardKey()))
+                R.id.form -> return@setOnNavigationItemSelectedListener false
+            }
+            return@setOnNavigationItemSelectedListener true
+        }
+
         this.navigator =
-            Navigator(DefaultBackstackHandler(this, content), Backstack.of(Keys.HomeKey()))
+            Navigator(DefaultBackstackHandler(this, binding.container), Backstack.of(TitleKey()))
         this.navigator.onCreate(savedInstanceState)
     }
 
