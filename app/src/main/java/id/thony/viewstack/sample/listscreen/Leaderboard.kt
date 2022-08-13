@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.recyclerview.widget.RecyclerView
-import id.thony.viewstack.ViewKey
+import id.thony.viewstack.sample.NameViewKey
 import id.thony.viewstack.sample.R
 import id.thony.viewstack.sample.databinding.ListViewItemBinding
 import id.thony.viewstack.sample.databinding.ViewLeaderboardBinding
@@ -16,7 +16,7 @@ import kotlinx.parcelize.Parcelize
 import kotlin.reflect.KClass
 
 @Parcelize
-class LeaderboardKey : ViewKey() {
+class LeaderboardKey : NameViewKey("Leaderboard") {
     override fun buildView(context: Context): View = LeaderboardView(context)
 }
 

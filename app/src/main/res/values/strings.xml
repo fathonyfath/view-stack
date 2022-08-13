@@ -30,4 +30,6 @@
     <string name="cd_home">Home</string>
     <string name="cd_list">List</string>
     <string name="cd_form">Form</string>
+
+    <string name="navigate_up_description">Navigate up</string>
 </resources>

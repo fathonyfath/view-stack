@@ -2,7 +2,7 @@ package id.thony.viewstack.sample.listscreen
 
 import android.content.Context
 import android.view.View
-import id.thony.viewstack.ViewKey
+import id.thony.viewstack.sample.NameViewKey
 import id.thony.viewstack.sample.databinding.ViewUserProfileBinding
 import id.thony.viewstack.sample.getKey
 import id.thony.viewstack.sample.view.Layout
@@ -10,7 +10,7 @@ import kotlinx.parcelize.Parcelize
 import kotlin.reflect.KClass
 
 @Parcelize
-class UserProfileKey(val userName: String) : ViewKey() {
+class UserProfileKey(val userName: String) : NameViewKey("Profile") {
     override fun buildView(context: Context): View = UserProfileView(context)
 }
 

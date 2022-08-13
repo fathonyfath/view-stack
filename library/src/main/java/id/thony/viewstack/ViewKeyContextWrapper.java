@@ -10,16 +10,21 @@ import org.jetbrains.annotations.Nullable;
 
 public class ViewKeyContextWrapper extends ContextWrapper {
     private static final String ViewKey = "ViewKey";
-
-    @Nullable
-    private LayoutInflater layoutInflater;
-
     @NotNull
     private final ViewKey viewKey;
+    @Nullable
+    private LayoutInflater layoutInflater;
 
     public ViewKeyContextWrapper(@NotNull Context base, @NotNull ViewKey viewKey) {
         super(base);
         this.viewKey = viewKey;
+    }
+
+    @SuppressLint("WrongConstant")
+    @SuppressWarnings("unchecked")
+    @NotNull
+    public static <T extends ViewKey> T getViewKey(@NotNull Context context) {
+        return (T) context.getSystemService(ViewKey);
     }
 
     @Override
@@ -34,12 +39,5 @@ public class ViewKeyContextWrapper extends ContextWrapper {
             return viewKey;
         }
         return super.getSystemService(name);
-    }
-
-    @SuppressLint("WrongConstant")
-    @SuppressWarnings("unchecked")
-    @NotNull
-    public static <T extends ViewKey> T getViewKey(@NotNull Context context) {
-        return (T) context.getSystemService(ViewKey);
     }
 }

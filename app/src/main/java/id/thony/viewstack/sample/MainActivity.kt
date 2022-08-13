@@ -3,7 +3,6 @@ package id.thony.viewstack.sample
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import id.thony.viewstack.Backstack
-import id.thony.viewstack.DefaultBackstackHandler
 import id.thony.viewstack.Navigator
 import id.thony.viewstack.sample.databinding.ActivityMainBinding
 import id.thony.viewstack.sample.formscreen.RegisterKey
@@ -39,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         this.navigator =
-            Navigator(DefaultBackstackHandler(this, binding.container), Backstack.of(TitleKey()))
+            Navigator(ToolbarBackstackHandler(this, binding.container), Backstack.of(TitleKey()))
         this.navigator.onCreate(savedInstanceState)
     }
 
@@ -75,5 +74,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         return null
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        this.navigator.onBackPressed()
+        return true
     }
 }

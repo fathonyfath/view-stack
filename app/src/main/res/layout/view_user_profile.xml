@@ -15,10 +15,10 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="64dp"
         android:layout_marginEnd="8dp"
+        android:background="@drawable/avatar_6_raster"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:background="@drawable/avatar_6_raster"
         app:srcCompat="@drawable/purple_frame"
         tools:background="@tools:sample/avatars[6]"
         tools:src="@drawable/purple_frame" />
@@ -33,16 +33,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profile_pic"
-        app:layout_constraintVertical_bias="1.0"/>
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/profile_user_name"
-        android:gravity="center_horizontal"
         android:layout_width="0dp"
         android:layout_height="40dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
+        android:gravity="center_horizontal"
         android:text="@string/profile_name_1"
         android:textAlignment="center"
         android:textColor="@color/colorAccent"
@@ -57,12 +57,12 @@
         android:layout_width="0dp"
         android:layout_height="120dp"
         android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="24dp"
-        android:layout_marginLeft="16dp"
         android:layout_marginRight="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_user_name"/>
+        app:layout_constraintTop_toBottomOf="@+id/profile_user_name" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

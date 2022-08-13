@@ -24,16 +24,6 @@ public final class Backstack implements Parcelable {
             return new Backstack[size];
         }
     };
-
-    @NotNull
-    public static Backstack of(@NotNull ViewKey... keys) {
-        final Stack<Pair<ViewKey, ViewState>> viewStack = new Stack<>();
-        for (ViewKey key : keys) {
-            viewStack.push(Pair.create(key, new ViewState()));
-        }
-        return new Backstack(viewStack);
-    }
-
     @NotNull
     private final Stack<Pair<ViewKey, ViewState>> history;
 
@@ -43,6 +33,32 @@ public final class Backstack implements Parcelable {
         }
 
         this.history = history;
+    }
+
+    /*
+     * Parcelable implementation.
+     */
+    protected Backstack(@NotNull Parcel in) {
+        int size = in.readInt();
+        Parcelable[] viewKeys = in.readParcelableArray(getClass().getClassLoader());
+        Parcelable[] viewStates = in.readParcelableArray(getClass().getClassLoader());
+
+        this.history = new Stack<>();
+
+        for (int i = 0; i < size; i++) {
+            final ViewKey viewKey = (ViewKey) viewKeys[i];
+            final ViewState viewState = (ViewState) viewStates[i];
+            this.history.add(i, Pair.create(viewKey, viewState));
+        }
+    }
+
+    @NotNull
+    public static Backstack of(@NotNull ViewKey... keys) {
+        final Stack<Pair<ViewKey, ViewState>> viewStack = new Stack<>();
+        for (ViewKey key : keys) {
+            viewStack.push(Pair.create(key, new ViewState()));
+        }
+        return new Backstack(viewStack);
     }
 
     protected void pushKey(@NotNull ViewKey viewKey) {
@@ -63,8 +79,12 @@ public final class Backstack implements Parcelable {
     }
 
     @NotNull
-    protected ViewKey peekKey() {
+    public ViewKey peekKey() {
         return this.history.peek().first;
+    }
+
+    public int count() {
+        return this.history.size();
     }
 
     protected void clearHistory() {
@@ -97,23 +117,6 @@ public final class Backstack implements Parcelable {
         final Stack<Pair<ViewKey, ViewState>> viewKeyStack =
                 (Stack<Pair<ViewKey, ViewState>>) this.history.clone();
         return new Backstack(viewKeyStack);
-    }
-
-    /*
-     * Parcelable implementation.
-     */
-    protected Backstack(@NotNull Parcel in) {
-        int size = in.readInt();
-        Parcelable[] viewKeys = in.readParcelableArray(getClass().getClassLoader());
-        Parcelable[] viewStates = in.readParcelableArray(getClass().getClassLoader());
-
-        this.history = new Stack<>();
-
-        for (int i = 0; i < size; i++) {
-            final ViewKey viewKey = (ViewKey) viewKeys[i];
-            final ViewState viewState = (ViewState) viewStates[i];
-            this.history.add(i, Pair.create(viewKey, viewState));
-        }
     }
 
     @Override
