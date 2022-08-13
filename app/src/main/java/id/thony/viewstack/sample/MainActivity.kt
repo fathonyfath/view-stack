@@ -1,19 +1,19 @@
 package id.thony.viewstack.sample
 
 import android.os.Bundle
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import id.thony.viewstack.Backstack
 import id.thony.viewstack.DefaultBackstackHandler
 import id.thony.viewstack.Navigator
 import id.thony.viewstack.sample.databinding.ActivityMainBinding
+import id.thony.viewstack.sample.formscreen.RegisterKey
 import id.thony.viewstack.sample.homescreen.TitleKey
 import id.thony.viewstack.sample.listscreen.LeaderboardKey
 
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        const val NavigatorService = "NavigatorService";
+        const val NavigatorService = "NavigatorService"
     }
 
     private lateinit var binding: ActivityMainBinding
@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
             when (menuItem.itemId) {
                 R.id.home -> navigator.replace(Backstack.of(TitleKey()))
                 R.id.list -> navigator.replace(Backstack.of(LeaderboardKey()))
-                R.id.form -> return@setOnNavigationItemSelectedListener false
+                R.id.form -> navigator.replace(Backstack.of(RegisterKey()))
             }
             return@setOnNavigationItemSelectedListener true
         }
