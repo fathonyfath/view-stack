@@ -1,6 +1,7 @@
 package id.thony.viewstack.sample
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import id.thony.viewstack.Backstack
 import id.thony.viewstack.Navigator
@@ -47,6 +48,7 @@ class MainActivity : AppCompatActivity() {
 
         this.navigator =
             Navigator(ToolbarMultipleBackstackHandler(this, binding.container), homeBackstack)
+
         this.navigator.onCreate(savedInstanceState)
     }
 
