@@ -15,7 +15,8 @@ import id.thony.viewstack.Navigator
 
 class ToolbarMultipleBackstackHandler(
     private val activity: AppCompatActivity,
-    private val container: ViewGroup
+    private val container: ViewGroup,
+    private val animationContainer: ViewGroup
 ) : DefaultBackstackHandler(activity, container) {
 
     override fun handleBackstackChange(
@@ -31,12 +32,25 @@ class ToolbarMultipleBackstackHandler(
             if (topView != null) {
                 val viewKey = getViewKey(topView)
                 saveViewState(topView, oldStack.obtainViewState(viewKey))
+                this.container.removeView(topView)
+                this.animationContainer.addView(topView)
+                val fadeOutAnim = createFadeOutAnimation(this.animationContainer, topView)
+                topView.startAnimation(fadeOutAnim)
             }
+            val upcomingKey = newStack.peekKey()
+            val upcomingViewState = newStack.obtainViewState(upcomingKey)
+            val view = buildView(upcomingKey)
+            restoreViewState(view, upcomingViewState)
+            val fadeInAnim = createFadeInAnimation()
 
+            this.container.addView(view)
+            view.startAnimation(fadeInAnim)
+        } else if (command == NavigationCommand.Restore) {
+            this.animationContainer.removeAllViews()
             super.handleBackstackChange(navigator, oldStack, newStack, command)
         }
 
-        if (command == NavigationCommand.Pop || command == NavigationCommand.Push || command == NavigationCommand.Restore) {
+        if (command == NavigationCommand.Pop || command == NavigationCommand.Push) {
             super.handleBackstackChange(navigator, oldStack, newStack, command)
         }
     }

@@ -31,8 +31,7 @@ public class DefaultBackstackHandler implements BackstackHandler {
 
             final ViewKey upcomingKey = newStack.peekKey();
             final ViewState upcomingViewState = newStack.obtainViewState(upcomingKey);
-            final ViewKeyContextWrapper context = new ViewKeyContextWrapper(this.context, upcomingKey);
-            final View view = upcomingKey.buildView(context);
+            final View view = buildView(upcomingKey);
             restoreViewState(view, upcomingViewState);
 
             container.addView(view);
