@@ -8,10 +8,9 @@ import android.view.animation.AnimationUtils
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
-import androidx.core.view.forEach
 import id.thony.viewstack.*
 
-class ToolbarBackstackHandler(
+class ToolbarMultipleBackstackHandler(
     private val activity: AppCompatActivity,
     private val container: ViewGroup
 ) : DefaultBackstackHandler(activity, container) {
@@ -23,46 +22,6 @@ class ToolbarBackstackHandler(
         direction: NavigationDirection,
         restoreState: Boolean
     ) {
-        if (direction == NavigationDirection.Replace) {
-            val upcomingKey = newStack.peekKey()
-            val upcomingViewState = navigator.obtainViewState(upcomingKey)
-            val context = ViewKeyContextWrapper(activity, upcomingKey)
-            val upcomingView = upcomingKey.buildView(context)
-            restoreViewState(upcomingView, upcomingViewState)
-
-            if (restoreState) {
-                container.removeAllViews()
-                container.addView(upcomingView)
-            } else {
-                container.forEach { view ->
-                    val anim = createFadeOutAnimation(container, view)
-                    view.startAnimation(anim)
-                }
-                container.addView(upcomingView)
-                upcomingView.startAnimation(createFadeInAnimation())
-            }
-            return
-        }
-
-        if (oldStack.peekKey() !== newStack.peekKey()) {
-            val oldView = container.getChildAt(0) ?: return
-            if (direction == NavigationDirection.Push) {
-                val currentKey = oldStack.peekKey()
-                val currentViewState = navigator.obtainViewState(currentKey)
-                saveViewState(oldView, currentViewState)
-            }
-            val upcomingKey = newStack.peekKey()
-            val upcomingViewState = navigator.obtainViewState(upcomingKey)
-            val context = ViewKeyContextWrapper(activity, upcomingKey)
-            val view = upcomingKey.buildView(context)
-            restoreViewState(view, upcomingViewState)
-            val fadeOutAnim = createFadeOutAnimation(container, oldView)
-            oldView.startAnimation(fadeOutAnim)
-
-            container.addView(view)
-            view.startAnimation(createFadeInAnimation())
-        }
-
         val key = newStack.peekKey() as? NameViewKey
         if (key != null) {
             setTitle(key.name)
@@ -74,6 +33,52 @@ class ToolbarBackstackHandler(
             val drawerArrowDrawable = DrawerArrowDrawable(activity)
             drawerArrowDrawable.progress = 1.0f
             setNavigationIcon(drawerArrowDrawable, R.string.navigate_up_description)
+        }
+
+        if (direction == NavigationDirection.Replace) {
+            val upcomingKey = newStack.peekKey()
+            val upcomingViewState = newStack.obtainViewState(upcomingKey)
+            val context = ViewKeyContextWrapper(activity, upcomingKey)
+            val upcomingView = upcomingKey.buildView(context)
+            restoreViewState(upcomingView, upcomingViewState)
+
+            if (restoreState) {
+                container.removeAllViews()
+                container.addView(upcomingView)
+            } else {
+                if (oldStack.peekKey() != newStack.peekKey()) {
+                    // Backstack is changing, assume the current view on container is top of old stack
+                    val oldView = container.getChildAt(0) ?: throw IllegalStateException()
+                    saveViewState(oldView, oldStack.obtainViewState(oldStack.peekKey()))
+                    val anim = createFadeOutAnimation(container, oldView)
+                    oldView.startAnimation(anim)
+                } else {
+                    container.removeAllViews()
+                }
+
+                container.addView(upcomingView)
+                upcomingView.startAnimation(createFadeInAnimation())
+            }
+            return
+        }
+
+        if (oldStack.peekKey() !== newStack.peekKey()) {
+            val oldView = container.getChildAt(0) ?: return
+            if (direction == NavigationDirection.Push) {
+                val currentKey = oldStack.peekKey()
+                val currentViewState = oldStack.obtainViewState(currentKey)
+                saveViewState(oldView, currentViewState)
+            }
+            val upcomingKey = newStack.peekKey()
+            val upcomingViewState = newStack.obtainViewState(upcomingKey)
+            val context = ViewKeyContextWrapper(activity, upcomingKey)
+            val view = upcomingKey.buildView(context)
+            restoreViewState(view, upcomingViewState)
+            val fadeOutAnim = createFadeOutAnimation(container, oldView)
+            oldView.startAnimation(fadeOutAnim)
+
+            container.addView(view)
+            view.startAnimation(createFadeInAnimation())
         }
     }
 

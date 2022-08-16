@@ -76,9 +76,4 @@ public class Navigator {
         this.handler.handleBackstackChange(
                 this, oldBackstack, this.backstack, NavigationDirection.Replace, false);
     }
-
-    @NotNull
-    public ViewState obtainViewState(@NotNull ViewKey viewKey) {
-        return this.backstack.obtainViewState(viewKey);
-    }
 }

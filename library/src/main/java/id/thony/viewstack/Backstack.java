@@ -92,7 +92,7 @@ public final class Backstack implements Parcelable {
     }
 
     @NotNull
-    protected ViewState obtainViewState(@NotNull ViewKey viewKey) {
+    public ViewState obtainViewState(@NotNull ViewKey viewKey) {
         ViewState foundViewState = null;
         for (Pair<ViewKey, ViewState> pair : this.history) {
             if (pair.first == viewKey) {

@@ -13,14 +13,22 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val NavigatorService = "NavigatorService"
+
+        private const val HomeBackstackKey = "HomeBackstack"
+        private const val ListBackstackKey = "ListBackstack"
+        private const val FormBackstackKey = "FormBackstack"
     }
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navigator: Navigator
 
+    private lateinit var homeBackstack: Backstack
+    private lateinit var listBackstack: Backstack
+    private lateinit var formBackstack: Backstack
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        restoreBackstackInstances(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -30,19 +38,23 @@ class MainActivity : AppCompatActivity() {
 
         binding.bottomNav.setOnNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
-                R.id.home -> navigator.replace(Backstack.of(TitleKey()))
-                R.id.list -> navigator.replace(Backstack.of(LeaderboardKey()))
-                R.id.form -> navigator.replace(Backstack.of(RegisterKey()))
+                R.id.home -> navigator.replace(homeBackstack)
+                R.id.list -> navigator.replace(listBackstack)
+                R.id.form -> navigator.replace(formBackstack)
             }
             return@setOnNavigationItemSelectedListener true
         }
 
         this.navigator =
-            Navigator(ToolbarBackstackHandler(this, binding.container), Backstack.of(TitleKey()))
+            Navigator(ToolbarMultipleBackstackHandler(this, binding.container), homeBackstack)
         this.navigator.onCreate(savedInstanceState)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
+        outState.putParcelable(HomeBackstackKey, homeBackstack)
+        outState.putParcelable(ListBackstackKey, listBackstack)
+        outState.putParcelable(FormBackstackKey, formBackstack)
+
         this.navigator.onSaveInstanceState(outState)
         super.onSaveInstanceState(outState)
     }
@@ -59,7 +71,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         if (!this.navigator.onBackPressed()) {
-            super.onBackPressed()
+            if (binding.bottomNav.selectedItemId != R.id.home) {
+                binding.bottomNav.selectedItemId = R.id.home
+            } else {
+                super.onBackPressed()
+            }
         }
     }
 
@@ -79,5 +95,18 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         this.navigator.onBackPressed()
         return true
+    }
+
+    private fun restoreBackstackInstances(savedInstanceState: Bundle?) {
+        if (savedInstanceState == null) {
+            homeBackstack = Backstack.of(TitleKey())
+            listBackstack = Backstack.of(LeaderboardKey())
+            formBackstack = Backstack.of(RegisterKey())
+        } else {
+            homeBackstack = savedInstanceState.getParcelable(HomeBackstackKey)!!
+            listBackstack = savedInstanceState.getParcelable(ListBackstackKey)!!
+            formBackstack = savedInstanceState.getParcelable(FormBackstackKey)!!
+
+        }
     }
 }

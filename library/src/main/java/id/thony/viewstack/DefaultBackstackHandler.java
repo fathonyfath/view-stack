@@ -30,7 +30,7 @@ public class DefaultBackstackHandler implements BackstackHandler {
             this.container.removeAllViews();
 
             final ViewKey upcomingKey = newStack.peekKey();
-            final ViewState upcomingViewState = navigator.obtainViewState(upcomingKey);
+            final ViewState upcomingViewState = newStack.obtainViewState(upcomingKey);
             final ViewKeyContextWrapper context = new ViewKeyContextWrapper(this.context, upcomingKey);
             final View view = upcomingKey.buildView(context);
             restoreViewState(view, upcomingViewState);
@@ -47,12 +47,12 @@ public class DefaultBackstackHandler implements BackstackHandler {
 
             if (direction == NavigationDirection.Push) {
                 final ViewKey currentKey = oldStack.peekKey();
-                final ViewState currentViewState = navigator.obtainViewState(currentKey);
+                final ViewState currentViewState = oldStack.obtainViewState(currentKey);
                 saveViewState(oldView, currentViewState);
             }
 
             final ViewKey upcomingKey = newStack.peekKey();
-            final ViewState upcomingViewState = navigator.obtainViewState(upcomingKey);
+            final ViewState upcomingViewState = newStack.obtainViewState(upcomingKey);
             final ViewKeyContextWrapper context = new ViewKeyContextWrapper(this.context, upcomingKey);
             final View view = upcomingKey.buildView(context);
             restoreViewState(view, upcomingViewState);
