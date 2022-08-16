@@ -22,13 +22,15 @@ public class Navigator {
 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         final Backstack oldBackstack = this.backstack.clone();
+        boolean restoreState = false;
 
         if (savedInstanceState != null) {
             this.backstack = savedInstanceState.getParcelable(BackstackKey);
+            restoreState = true;
         }
 
         this.handler.handleBackstackChange(
-                this, oldBackstack, this.backstack, NavigationDirection.Replace);
+                this, oldBackstack, this.backstack, NavigationDirection.Replace, restoreState);
     }
 
     public void onRestoreInstanceState(@NotNull Bundle savedInstanceState) {
@@ -53,7 +55,7 @@ public class Navigator {
         }
 
         this.handler.handleBackstackChange(
-                this, oldBackstack, this.backstack, NavigationDirection.Forward);
+                this, oldBackstack, this.backstack, NavigationDirection.Push, false);
     }
 
     public boolean pop() {
@@ -61,7 +63,7 @@ public class Navigator {
         final boolean isPopped = this.backstack.popKey();
         if (isPopped) {
             this.handler.handleBackstackChange(
-                    this, oldBackstack, this.backstack, NavigationDirection.Backward);
+                    this, oldBackstack, this.backstack, NavigationDirection.Pop, false);
             return true;
         }
 
@@ -72,11 +74,11 @@ public class Navigator {
         final Backstack oldBackstack = this.backstack.clone();
         this.backstack = backstack;
         this.handler.handleBackstackChange(
-                this, oldBackstack, this.backstack, NavigationDirection.Replace);
+                this, oldBackstack, this.backstack, NavigationDirection.Replace, false);
     }
 
     @NotNull
-    protected ViewState obtainViewState(@NotNull ViewKey viewKey) {
+    public ViewState obtainViewState(@NotNull ViewKey viewKey) {
         return this.backstack.obtainViewState(viewKey);
     }
 }
