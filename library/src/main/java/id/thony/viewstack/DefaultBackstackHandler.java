@@ -24,15 +24,16 @@ public class DefaultBackstackHandler implements BackstackHandler {
     public void handleBackstackChange(@NotNull Navigator navigator,
                                       @NotNull Backstack oldStack,
                                       @NotNull Backstack newStack,
-                                      @NotNull NavigationDirection direction) {
+                                      @NotNull NavigationDirection direction,
+                                      boolean restoreState) {
         if (direction == NavigationDirection.Replace) {
             this.container.removeAllViews();
 
             final ViewKey upcomingKey = newStack.peekKey();
-            final ViewState upcomingViewState = navigator.obtainViewState(upcomingKey);
+            final ViewState upcomingViewState = newStack.obtainViewState(upcomingKey);
             final ViewKeyContextWrapper context = new ViewKeyContextWrapper(this.context, upcomingKey);
             final View view = upcomingKey.buildView(context);
-            view.restoreHierarchyState(upcomingViewState.getHierarchyState());
+            restoreViewState(view, upcomingViewState);
 
             container.addView(view);
             return;
@@ -44,22 +45,30 @@ public class DefaultBackstackHandler implements BackstackHandler {
                 return;
             }
 
-            if (direction == NavigationDirection.Forward) {
+            if (direction == NavigationDirection.Push) {
                 final ViewKey currentKey = oldStack.peekKey();
-                final ViewState currentViewState = navigator.obtainViewState(currentKey);
-                final SparseArray<Parcelable> hierarchyState = currentViewState.getHierarchyState();
-                hierarchyState.clear();
-                oldView.saveHierarchyState(hierarchyState);
+                final ViewState currentViewState = oldStack.obtainViewState(currentKey);
+                saveViewState(oldView, currentViewState);
             }
 
             final ViewKey upcomingKey = newStack.peekKey();
-            final ViewState upcomingViewState = navigator.obtainViewState(upcomingKey);
+            final ViewState upcomingViewState = newStack.obtainViewState(upcomingKey);
             final ViewKeyContextWrapper context = new ViewKeyContextWrapper(this.context, upcomingKey);
             final View view = upcomingKey.buildView(context);
-            view.restoreHierarchyState(upcomingViewState.getHierarchyState());
+            restoreViewState(view, upcomingViewState);
 
             container.removeViewAt(0);
             container.addView(view);
         }
+    }
+
+    protected void saveViewState(@NotNull View view, @NotNull ViewState viewState) {
+        final SparseArray<Parcelable> hierarchyState = viewState.getHierarchyState();
+        hierarchyState.clear();
+        view.saveHierarchyState(hierarchyState);
+    }
+
+    protected void restoreViewState(@NotNull View view, @NotNull ViewState viewState) {
+        view.restoreHierarchyState(viewState.getHierarchyState());
     }
 }
