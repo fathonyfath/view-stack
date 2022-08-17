@@ -46,13 +46,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         this.navigator =
-            Navigator(
-                ToolbarMultipleBackstackHandler(
-                    this,
-                    binding.container,
-                    binding.animationContainer
-                ), homeBackstack
-            )
+            Navigator(ToolbarMultipleBackstackHandler(this, binding.container), homeBackstack)
 
         this.navigator.onCreate(savedInstanceState)
     }
