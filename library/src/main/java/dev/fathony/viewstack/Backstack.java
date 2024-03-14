@@ -24,21 +24,22 @@ public final class Backstack implements Parcelable {
             return new Backstack[size];
         }
     };
+    
     @NotNull
     private final Stack<Pair<ViewKey, ViewState>> history;
 
     private Backstack(@NotNull Stack<Pair<ViewKey, ViewState>> history) {
-        if (history.size() <= 0) {
+        if (history.isEmpty()) {
             throw new IllegalStateException();
         }
 
         this.history = history;
     }
 
-    /*
-     * Parcelable implementation.
+    /**
+     * Parcelable implementation
      */
-    protected Backstack(@NotNull Parcel in) {
+    private Backstack(@NotNull Parcel in) {
         int size = in.readInt();
         Parcelable[] viewKeys = in.readParcelableArray(getClass().getClassLoader());
         Parcelable[] viewStates = in.readParcelableArray(getClass().getClassLoader());
@@ -61,11 +62,11 @@ public final class Backstack implements Parcelable {
         return new Backstack(viewStack);
     }
 
-    protected void pushKey(@NotNull ViewKey viewKey) {
+    void pushKey(@NotNull ViewKey viewKey) {
         this.history.push(Pair.create(viewKey, new ViewState()));
     }
 
-    protected boolean popKey() {
+    boolean popKey() {
         if (this.history.size() == 1) {
             return false;
         }
@@ -87,10 +88,6 @@ public final class Backstack implements Parcelable {
         return this.history.size();
     }
 
-    protected void clearHistory() {
-        this.history.clear();
-    }
-
     @NotNull
     public ViewState obtainViewState(@NotNull ViewKey viewKey) {
         ViewState foundViewState = null;
@@ -109,11 +106,10 @@ public final class Backstack implements Parcelable {
         }
     }
 
-    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    @SuppressWarnings({"MethodDoesntCallSuperMethod", "unchecked"})
     @NotNull
     @Override
     protected Backstack clone() {
-        //noinspection unchecked
         final Stack<Pair<ViewKey, ViewState>> viewKeyStack =
                 (Stack<Pair<ViewKey, ViewState>>) this.history.clone();
         return new Backstack(viewKeyStack);

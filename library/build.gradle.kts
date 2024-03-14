@@ -25,5 +25,5 @@ android {
 }
 
 dependencies {
-    compileOnly("org.jetbrains:annotations:21.0.1")
+    compileOnly("org.jetbrains:annotations:23.0.0")
 }

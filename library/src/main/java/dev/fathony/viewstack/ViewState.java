@@ -24,11 +24,11 @@ public final class ViewState implements Parcelable {
     @NotNull
     private final SparseArray<Parcelable> hierarchyState;
 
-    protected ViewState() {
+    ViewState() {
         this.hierarchyState = new SparseArray<>();
     }
 
-    protected ViewState(@NotNull Parcel in) {
+    private ViewState(@NotNull Parcel in) {
         this.hierarchyState = in.readSparseArray(getClass().getClassLoader());
     }
 
