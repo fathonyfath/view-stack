@@ -3,6 +3,7 @@ plugins {
 }
 
 android {
+    namespace 'id.thony.viewstack'
     compileSdkVersion 30
     defaultConfig {
         minSdkVersion 5
