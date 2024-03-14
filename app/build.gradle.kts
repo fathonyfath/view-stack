@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "id.thony.viewstack.sample"
+    namespace = "dev.fathony.viewstack.sample"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "id.thony.viewstack"
+        applicationId = "dev.fathony.viewstack.sample"
         minSdk = 16
         targetSdk = 34
         versionCode = 1

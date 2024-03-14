@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "id.thony.viewstack"
+    namespace = "dev.fathony.viewstack"
     compileSdk = 34
     defaultConfig {
         minSdk = 5
