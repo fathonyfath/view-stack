@@ -41,7 +41,7 @@ android {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.6.10"
     implementation project(path: ':library')
     debugImplementation "com.github.YarikSOffice.Venom:venom:0.3.1"
     releaseImplementation "com.github.YarikSOffice.Venom:venom-no-op:0.3.1"
