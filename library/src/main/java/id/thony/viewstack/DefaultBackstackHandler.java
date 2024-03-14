@@ -24,15 +24,14 @@ public class DefaultBackstackHandler implements BackstackHandler {
     public void handleBackstackChange(@NotNull Navigator navigator,
                                       @NotNull Backstack oldStack,
                                       @NotNull Backstack newStack,
-                                      @NotNull NavigationDirection direction,
-                                      boolean restoreState) {
-        if (direction == NavigationDirection.Replace) {
+                                      @NotNull NavigationCommand command) {
+
+        if (command == NavigationCommand.Replace || command == NavigationCommand.Restore) {
             this.container.removeAllViews();
 
             final ViewKey upcomingKey = newStack.peekKey();
             final ViewState upcomingViewState = newStack.obtainViewState(upcomingKey);
-            final ViewKeyContextWrapper context = new ViewKeyContextWrapper(this.context, upcomingKey);
-            final View view = upcomingKey.buildView(context);
+            final View view = buildView(upcomingKey);
             restoreViewState(view, upcomingViewState);
 
             container.addView(view);
@@ -40,35 +39,46 @@ public class DefaultBackstackHandler implements BackstackHandler {
         }
 
         if (oldStack.peekKey() != newStack.peekKey()) {
-            final View oldView = this.container.getChildAt(0);
-            if (oldView == null) {
+            final View topView = this.container.getChildAt(0);
+            if (topView == null) {
                 return;
             }
 
-            if (direction == NavigationDirection.Push) {
-                final ViewKey currentKey = oldStack.peekKey();
-                final ViewState currentViewState = oldStack.obtainViewState(currentKey);
-                saveViewState(oldView, currentViewState);
+            if (command == NavigationCommand.Push) {
+                saveViewState(topView, oldStack.obtainViewState(getViewKey(topView)));
+                this.container.removeView(topView);
+
+                final ViewKey upcomingViewKey = newStack.peekKey();
+                final View viewToPush = buildView(upcomingViewKey);
+                restoreViewState(viewToPush, newStack.obtainViewState(upcomingViewKey));
+                this.container.addView(viewToPush);
+            } else if (command == NavigationCommand.Pop) {
+                this.container.removeView(topView);
+
+                final ViewKey upcomingViewKey = newStack.peekKey();
+                final View viewToPush = buildView(upcomingViewKey);
+                restoreViewState(viewToPush, newStack.obtainViewState(upcomingViewKey));
+                this.container.addView(viewToPush);
             }
-
-            final ViewKey upcomingKey = newStack.peekKey();
-            final ViewState upcomingViewState = newStack.obtainViewState(upcomingKey);
-            final ViewKeyContextWrapper context = new ViewKeyContextWrapper(this.context, upcomingKey);
-            final View view = upcomingKey.buildView(context);
-            restoreViewState(view, upcomingViewState);
-
-            container.removeViewAt(0);
-            container.addView(view);
         }
     }
 
-    protected void saveViewState(@NotNull View view, @NotNull ViewState viewState) {
+    protected final void saveViewState(@NotNull View view, @NotNull ViewState viewState) {
         final SparseArray<Parcelable> hierarchyState = viewState.getHierarchyState();
         hierarchyState.clear();
         view.saveHierarchyState(hierarchyState);
     }
 
-    protected void restoreViewState(@NotNull View view, @NotNull ViewState viewState) {
+    protected final void restoreViewState(@NotNull View view, @NotNull ViewState viewState) {
         view.restoreHierarchyState(viewState.getHierarchyState());
+    }
+
+    protected final ViewKey getViewKey(@NotNull View view) {
+        return ViewKeyContextWrapper.getViewKey(view.getContext());
+    }
+
+    protected final View buildView(@NotNull ViewKey viewKey) {
+        final ViewKeyContextWrapper context = new ViewKeyContextWrapper(this.context, viewKey);
+        return viewKey.buildView(context);
     }
 }

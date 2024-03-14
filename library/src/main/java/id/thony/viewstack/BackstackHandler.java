@@ -7,6 +7,5 @@ public interface BackstackHandler {
     void handleBackstackChange(@NotNull Navigator navigator,
                                @NotNull Backstack oldStack,
                                @NotNull Backstack newStack,
-                               @NotNull NavigationDirection direction,
-                               boolean restoreState);
+                               @NotNull NavigationCommand command);
 }
