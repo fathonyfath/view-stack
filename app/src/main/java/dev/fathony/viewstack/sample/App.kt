@@ -10,6 +10,5 @@ class App : Application() {
         val venom = Venom.createInstance(this)
         venom.initialize()
         Venom.setGlobalInstance(venom)
-        venom.start()
     }
 }

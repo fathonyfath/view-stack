@@ -1,13 +1,18 @@
 package dev.fathony.viewstack.sample
 
+import android.content.pm.ApplicationInfo
+import android.os.Build
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import com.github.venom.Venom
 import dev.fathony.viewstack.Backstack
 import dev.fathony.viewstack.Navigator
 import dev.fathony.viewstack.sample.databinding.ActivityMainBinding
 import dev.fathony.viewstack.sample.formscreen.RegisterKey
 import dev.fathony.viewstack.sample.homescreen.TitleKey
 import dev.fathony.viewstack.sample.listscreen.LeaderboardKey
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,6 +30,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var homeBackstack: Backstack
     private lateinit var listBackstack: Backstack
     private lateinit var formBackstack: Backstack
+
+    private val venom = Venom.getGlobalInstance()
+
+    private val permissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                venom.start()
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +63,14 @@ class MainActivity : AppCompatActivity() {
             Navigator(ToolbarMultipleBackstackHandler(this, binding.container), homeBackstack)
 
         this.navigator.onCreate(savedInstanceState)
+
+        val isDebuggable = 0 != applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE
+
+        if (isDebuggable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            venom.start()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
