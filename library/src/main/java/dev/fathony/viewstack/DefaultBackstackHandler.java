@@ -26,7 +26,7 @@ public class DefaultBackstackHandler implements BackstackHandler {
                                       @NotNull Backstack newStack,
                                       @NotNull NavigationCommand command) {
 
-        if (command == NavigationCommand.Replace || command == NavigationCommand.Restore) {
+        if (command == NavigationCommand.Replace || command == NavigationCommand.Initialize) {
             this.container.removeAllViews();
 
             final ViewKey upcomingKey = newStack.peekKey();

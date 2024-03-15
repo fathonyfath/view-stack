@@ -59,8 +59,12 @@ class MainActivity : AppCompatActivity() {
             return@setOnNavigationItemSelectedListener true
         }
 
+//        this.navigator =
+//            Navigator(ToolbarMultipleBackstackHandler(this, binding.container), homeBackstack)
+
         this.navigator =
-            Navigator(ToolbarMultipleBackstackHandler(this, binding.container), homeBackstack)
+            Navigator(AnimationDefaultBackstackHandler(this, binding.container), homeBackstack)
+
 
         this.navigator.onCreate(savedInstanceState)
 

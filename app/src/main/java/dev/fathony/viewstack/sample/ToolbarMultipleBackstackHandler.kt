@@ -8,7 +8,6 @@ import android.view.animation.AnimationUtils
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
-import androidx.core.view.forEach
 import dev.fathony.viewstack.Backstack
 import dev.fathony.viewstack.DefaultBackstackHandler
 import dev.fathony.viewstack.NavigationCommand
@@ -40,7 +39,6 @@ class ToolbarMultipleBackstackHandler(
                     val anim = createFadeOutAnimation(topView, this.container)
                     topView.startAnimation(anim)
                 } else {
-                    this.container.forEach { it.clearAnimation() }
                     this.container.removeAllViews()
                 }
 
@@ -54,7 +52,7 @@ class ToolbarMultipleBackstackHandler(
                 container.addView(view)
                 view.startAnimation(createFadeInAnimation())
             }
-            NavigationCommand.Restore -> {
+            NavigationCommand.Initialize -> {
                 this.container.removeAllViews()
 
                 val upcomingKey = newStack.peekKey()
@@ -78,7 +76,6 @@ class ToolbarMultipleBackstackHandler(
                     val anim = createPushSlideOutAnimation(oldView, this.container)
                     oldView.startAnimation(anim)
                 } else {
-                    this.container.forEach { it.clearAnimation() }
                     this.container.removeAllViews()
                 }
 
@@ -102,7 +99,6 @@ class ToolbarMultipleBackstackHandler(
                     val anim = createPopSlideOutAnimation(oldView, this.container)
                     oldView.startAnimation(anim)
                 } else {
-                    this.container.forEach { it.clearAnimation() }
                     this.container.removeAllViews()
                 }
 

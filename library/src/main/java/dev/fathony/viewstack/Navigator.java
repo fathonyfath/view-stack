@@ -22,11 +22,10 @@ public class Navigator {
 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         final Backstack oldBackstack = this.backstack.clone();
-        NavigationCommand command = NavigationCommand.Replace;
+        final NavigationCommand command = NavigationCommand.Initialize;
 
         if (savedInstanceState != null) {
             this.backstack = savedInstanceState.getParcelable(BackstackKey);
-            command = NavigationCommand.Restore;
         }
 
         this.handler.handleBackstackChange(
