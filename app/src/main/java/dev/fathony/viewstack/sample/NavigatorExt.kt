@@ -7,6 +7,6 @@ import dev.fathony.viewstack.Navigator
 val View.navigator: Navigator
     @SuppressLint("WrongConstant")
     get() {
-        return context.getSystemService(MainActivity.NavigatorService) as? Navigator
+        return context.getSystemService(MainActivity.NAVIGATOR_SERVICE) as? Navigator
             ?: throw IllegalStateException()
     }

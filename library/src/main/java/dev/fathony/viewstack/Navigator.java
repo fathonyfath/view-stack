@@ -5,6 +5,9 @@ import android.os.Bundle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Navigator {
     @NotNull
     private static final String BackstackKey = "BackstackKey";
@@ -14,6 +17,12 @@ public class Navigator {
 
     @NotNull
     private Backstack backstack;
+
+    private boolean willHandleNavigation = false;
+
+    @NotNull
+    private final List<WillHandleNavigationChangedListener> willHandleNavigationChangedListeners =
+            new ArrayList<>();
 
     public Navigator(@NotNull BackstackHandler handler, @NotNull Backstack backstack) {
         this.handler = handler;
@@ -30,21 +39,12 @@ public class Navigator {
 
         this.handler.handleBackstackChange(
                 this, oldBackstack, this.backstack, command);
-    }
 
-    public void onRestoreInstanceState(@NotNull Bundle savedInstanceState) {
-        this.backstack = savedInstanceState.getParcelable(BackstackKey);
+        updateWillHandleNavigation(false);
     }
 
     public void onSaveInstanceState(@NotNull Bundle outBundle) {
         outBundle.putParcelable(BackstackKey, this.backstack);
-    }
-
-    public boolean onBackPressed() {
-        return this.pop();
-    }
-
-    public void onDestroy() {
     }
 
     public void push(@NotNull ViewKey... viewKeys) {
@@ -55,6 +55,8 @@ public class Navigator {
 
         this.handler.handleBackstackChange(
                 this, oldBackstack, this.backstack, NavigationCommand.Push);
+
+        updateWillHandleNavigation(true);
     }
 
     public boolean pop() {
@@ -63,6 +65,8 @@ public class Navigator {
         if (isPopped) {
             this.handler.handleBackstackChange(
                     this, oldBackstack, this.backstack, NavigationCommand.Pop);
+
+            updateWillHandleNavigation(true);
             return true;
         }
 
@@ -74,5 +78,35 @@ public class Navigator {
         this.backstack = backstack;
         this.handler.handleBackstackChange(
                 this, oldBackstack, this.backstack, NavigationCommand.Replace);
+
+        updateWillHandleNavigation(true);
+    }
+
+    public boolean willHandleNavigation() {
+        return this.backstack.count() > 1;
+    }
+
+    public void addWillHandleNavigationChangedListener(@NotNull WillHandleNavigationChangedListener listener) {
+        this.willHandleNavigationChangedListeners.add(listener);
+    }
+
+    public void removeWillHandleNavigationChangedListener(@NotNull WillHandleNavigationChangedListener listener) {
+        this.willHandleNavigationChangedListeners.remove(listener);
+    }
+
+    private void updateWillHandleNavigation(boolean notifyListeners) {
+        boolean previousValue = this.willHandleNavigation;
+        this.willHandleNavigation = willHandleNavigation();
+
+        if (notifyListeners && previousValue != this.willHandleNavigation) {
+            notifyWillHandleNavigationChangedListeners(this.willHandleNavigation);
+        }
+    }
+
+    private void notifyWillHandleNavigationChangedListeners(boolean willHandleNavigation) {
+        List<WillHandleNavigationChangedListener> copy = new ArrayList<>(this.willHandleNavigationChangedListeners);
+        for (WillHandleNavigationChangedListener listener : copy) {
+            listener.onWillHandleNavigationChanged(willHandleNavigation);
+        }
     }
 }
