@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
 //            Navigator(ToolbarMultipleBackstackHandler(this, binding.container), homeBackstack)
 
         navigator =
-            Navigator(AnimationDefaultBackstackHandler(this, binding.container), homeBackstack)
+            Navigator(ToolbarMultipleBackstackHandler(this, binding.container), homeBackstack)
         navigator.onCreate(savedInstanceState)
         
         onBackPressedDispatcher.addCallback(backToHomeBackPressedCallback)

@@ -5,17 +5,20 @@ import android.os.Parcelable;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class DefaultBackstackHandler implements BackstackHandler {
 
     @NotNull
     private final Context context;
+
     @NotNull
     private final ViewGroup container;
 
-    public DefaultBackstackHandler(@NotNull Context context, @NotNull ViewGroup container) {
+    protected DefaultBackstackHandler(@NotNull Context context, @NotNull ViewGroup container) {
         this.context = context;
         this.container = container;
     }
@@ -25,42 +28,103 @@ public class DefaultBackstackHandler implements BackstackHandler {
                                       @NotNull Backstack oldStack,
                                       @NotNull Backstack newStack,
                                       @NotNull NavigationCommand command) {
+        switch (command) {
+            case Initialize:
+                handleInitializeNavigationCommand(newStack);
+                break;
+            case Push:
+            case Replace:
+                handlePushNavigationCommand(oldStack, newStack);
+                break;
+            case Pop:
+                handlePopNavigationCommand(oldStack, newStack);
+                break;
+        }
+    }
 
-        if (command == NavigationCommand.Replace || command == NavigationCommand.Initialize) {
-            this.container.removeAllViews();
+    @Nullable
+    protected Animation enterAnimation() {
+        return null;
+    }
 
-            final ViewKey upcomingKey = newStack.peekKey();
-            final ViewState upcomingViewState = newStack.obtainViewState(upcomingKey);
-            final View view = buildView(upcomingKey);
-            restoreViewState(view, upcomingViewState);
+    @Nullable
+    protected Animation exitAnimation() {
+        return null;
+    }
 
-            container.addView(view);
-            return;
+    @Nullable
+    protected Animation popEnterAnimation() {
+        return null;
+    }
+
+    @Nullable
+    protected Animation popExitAnimation() {
+        return null;
+    }
+
+    protected final void handleInitializeNavigationCommand(@NotNull Backstack newStack) {
+        this.container.removeAllViews();
+        final ViewKey nextKey = newStack.peekKey();
+        final View nextView = buildView(nextKey, newStack.obtainViewState(nextKey));
+        this.container.addView(nextView);
+        final Animation enterAnimation = enterAnimation();
+        if (enterAnimation != null) nextView.startAnimation(enterAnimation);
+    }
+
+    protected final void handlePushNavigationCommand(
+            @NotNull Backstack oldStack,
+            @NotNull Backstack newStack
+    ) {
+        if (oldStack.peekKey() == newStack.peekKey()) return;
+
+        final ViewKey previousKey = oldStack.peekKey();
+        final View previousView = this.container.findViewById(previousKey.hashCode());
+        if (previousView != null) {
+            saveViewState(previousView, oldStack.obtainViewState(getViewKey(previousView)));
+
+            if (this.container.getChildCount() == 1) {
+                animateRemoveViewSideEffect(previousView, exitAnimation());
+            } else {
+                this.container.removeAllViews();
+            }
         }
 
-        if (oldStack.peekKey() != newStack.peekKey()) {
-            final View topView = this.container.getChildAt(0);
-            if (topView == null) {
-                return;
-            }
+        final ViewKey upcomingKey = newStack.peekKey();
+        final View upcomingView = buildView(upcomingKey, newStack.obtainViewState(upcomingKey));
+        this.container.addView(upcomingView);
+        final Animation enterAnimation = enterAnimation();
+        if (enterAnimation != null) upcomingView.startAnimation(enterAnimation);
+    }
 
-            if (command == NavigationCommand.Push) {
-                saveViewState(topView, oldStack.obtainViewState(getViewKey(topView)));
-                this.container.removeView(topView);
+    protected final void handlePopNavigationCommand(
+            @NotNull Backstack oldStack,
+            @NotNull Backstack newStack
+    ) {
+        if (oldStack.peekKey() == newStack.peekKey()) return;
 
-                final ViewKey upcomingViewKey = newStack.peekKey();
-                final View viewToPush = buildView(upcomingViewKey);
-                restoreViewState(viewToPush, newStack.obtainViewState(upcomingViewKey));
-                this.container.addView(viewToPush);
-            } else if (command == NavigationCommand.Pop) {
-                this.container.removeView(topView);
-
-                final ViewKey upcomingViewKey = newStack.peekKey();
-                final View viewToPush = buildView(upcomingViewKey);
-                restoreViewState(viewToPush, newStack.obtainViewState(upcomingViewKey));
-                this.container.addView(viewToPush);
+        final ViewKey previousKey = oldStack.peekKey();
+        final View previousView = this.container.findViewById(previousKey.hashCode());
+        if (previousView != null) {
+            if (this.container.getChildCount() == 1) {
+                animateRemoveViewSideEffect(previousView, popExitAnimation());
+            } else {
+                this.container.removeAllViews();
             }
         }
+
+        final ViewKey upcomingKey = newStack.peekKey();
+        final View upcomingView = buildView(upcomingKey, newStack.obtainViewState(upcomingKey));
+        this.container.addView(upcomingView);
+        final Animation popEnterAnimation = popEnterAnimation();
+        if (popEnterAnimation != null) upcomingView.startAnimation(popEnterAnimation);
+    }
+
+    protected final View buildView(@NotNull ViewKey viewKey, @NotNull ViewState viewState) {
+        final ViewKeyContextWrapper context = new ViewKeyContextWrapper(this.context, viewKey);
+        final View view = viewKey.buildView(context);
+        view.restoreHierarchyState(viewState.getHierarchyState());
+        view.setId(viewKey.hashCode());
+        return view;
     }
 
     protected final void saveViewState(@NotNull View view, @NotNull ViewState viewState) {
@@ -69,16 +133,32 @@ public class DefaultBackstackHandler implements BackstackHandler {
         view.saveHierarchyState(hierarchyState);
     }
 
-    protected final void restoreViewState(@NotNull View view, @NotNull ViewState viewState) {
-        view.restoreHierarchyState(viewState.getHierarchyState());
-    }
-
     protected final ViewKey getViewKey(@NotNull View view) {
         return ViewKeyContextWrapper.getViewKey(view.getContext());
     }
 
-    protected final View buildView(@NotNull ViewKey viewKey) {
-        final ViewKeyContextWrapper context = new ViewKeyContextWrapper(this.context, viewKey);
-        return viewKey.buildView(context);
+    private void animateRemoveViewSideEffect(@NotNull View view,
+                                             @Nullable Animation exitAnimation) {
+        if (exitAnimation != null) {
+            exitAnimation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    DefaultBackstackHandler.this.container.removeView(view);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+
+            view.startAnimation(exitAnimation);
+        } else {
+            DefaultBackstackHandler.this.container.removeView(view);
+        }
     }
 }
