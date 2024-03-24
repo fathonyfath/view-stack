@@ -48,7 +48,7 @@ dependencies {
     implementation(project(":library"))
     debugImplementation("com.github.YarikSOffice.Venom:venom:0.7.1")
     releaseImplementation("com.github.YarikSOffice.Venom:venom-no-op:0.7.1")
-    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.7")
+    debugImplementation("com.squareup.leakcanary:leakcanary-android:3.0-alpha-1")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
